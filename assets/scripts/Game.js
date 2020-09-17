@@ -32,12 +32,17 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        // 得分音效资源
+        scoreAudio: {
+            default: null,
+            type: cc.AudioClip
+        },
     },
 
 
     onLoad: function () {
         // 获取地平面的 y 轴坐标
-        this.groundY = this.ground.y + this.ground.height/2;
+        this.groundY = this.ground.y + this.ground.height / 2;
         // 初始化计时器
         this.timer = 0;
         this.starDuration = 0;
@@ -47,8 +52,8 @@ cc.Class({
         this.score = 0;
     },
 
-  
-    spawnNewStar: function() {
+
+    spawnNewStar: function () {
         // 使用给定的模板在场景中生成一个新节点
         var newStar = cc.instantiate(this.starPrefab);
         // 将新增的节点添加到 Canvas 节点下面
@@ -92,6 +97,8 @@ cc.Class({
         this.score += 1;
         // 更新scoreDisplayLabel的文字
         this.scoreDisplay.string = 'Score: ' + this.score;
+        //播放得分音效
+        cc.audioEngine.playEffect(this.scoreAudio, false);
     },
 
     gameOver: function () {
