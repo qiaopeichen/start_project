@@ -72,6 +72,11 @@ cc.Class({
 
     },
 
+    onDestroy () {
+        // 取消键盘输入监听
+        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+    },    
 
     update: function (dt) {
         // 根据当前加速度方向每帧更新速度
@@ -88,12 +93,6 @@ cc.Class({
 
         // 根据当前速度更新主角的位置
         this.node.x += this.xSpeed * dt;
-    },
-
-    onDestroy() {
-        // 取消键盘输入监听
-        cc.systemEvent.off(cc.systemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
-        cc.systemEvent.off(cc.systemEvent.EventType.KEY_UP, this.onKeyUp, this);
     },
 
     start() {
