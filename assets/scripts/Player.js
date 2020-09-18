@@ -30,7 +30,7 @@ cc.Class({
         // 下落
         var jumpDown = cc.moveBy(this.jumpDuration, cc.v2(0, -this.jumpHeight)).easing(cc.easeCubicActionIn());
         // 添加一个回调函数，用于在动作结束时调用我们定义的其他方法
-        var callback =cc.callFunc(this.playJumpSound, this);
+        var callback = cc.callFunc(this.playJumpSound, this);
         // 不断重复
         return cc.repeatForever(cc.sequence(jumpUp, jumpDown, callback));
     },
@@ -44,9 +44,11 @@ cc.Class({
         // set a flag when key pressed
         switch (event.keyCode) {
             case cc.macro.KEY.a:
+            case cc.macro.KEY.left:
                 this.accLeft = true;
                 break;
             case cc.macro.KEY.d:
+            case cc.macro.KEY.right:
                 this.accRight = true;
                 break;
         }
@@ -56,14 +58,31 @@ cc.Class({
         // unset a flag when key released
         switch (event.keyCode) {
             case cc.macro.KEY.a:
+            case cc.macro.KEY.left:
                 this.accLeft = false;
                 break;
             case cc.macro.KEY.d:
+            case cc.macro.KEY.right:
                 this.accRight = false;
                 break;
         }
     },
 
+    onTouchStart (event) {
+        var touchLoc = event.getLocation();
+        if (touchLoc.x >= cc.winSize.width/2) {
+            this.accLeft = false;
+            this.accRight = true;
+        } else {
+            this.accLeft = true;
+            this.accRight = false;
+        }
+    },
+
+    onTouchEnd (event) {
+        this.accLeft = false;
+        this.accRight = false;
+    },
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -82,13 +101,20 @@ cc.Class({
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
 
+        var touchReceiver = cc.Canvas.instance.node;
+        touchReceiver.on('touchstart', this.onTouchStart, this);
+        touchReceiver.on('touchend', this.onTouchEnd, this);
     },
 
-    onDestroy () {
+    onDestroy() {
         // 取消键盘输入监听
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
-    },    
+
+        var touchReceiver = cc.Canvas.instance.node;
+        touchReceiver.off('touchstart', this.onTouchStart, this);
+        touchReceiver.off('touchend', this.onTouchEnd, this);
+    },
 
     update: function (dt) {
         // 根据当前加速度方向每帧更新速度
